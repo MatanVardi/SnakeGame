@@ -1,0 +1,25 @@
+# Executables
+*.exe
+*.out
+
+# Object files (the middle-step files GCC makes)
+*.o
+*.obj
+
+# VS Code folders
+.vscode/
+
+# Build folders (if you use them)
+build/
+bin/
+obj/
+
+# Raylib library files (if they are inside your project folder)
+# Usually better to ignore them and let people install Raylib themselves
+*.lib
+*.a
+*.dll
+
+# OS-specific junk
+Thumbs.db
+.DS_Store
