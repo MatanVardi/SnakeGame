@@ -5,6 +5,6 @@
 
 int getAppleCorX();
 int getAppleCorY();
-void checkForCollision(Snake *snake, Rectangle appleRect, bool *appleOnBoard, int *score);
+bool checkForCollision(Snake *snake, Rectangle appleRect, bool *onBoard, int *score);
 
 #endif

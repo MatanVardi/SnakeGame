@@ -15,7 +15,7 @@ int getAppleCorY()
     return randomNumY;
 }
 
-void checkForCollision(Snake *snake, Rectangle appleRect, bool *onBoard, int *score)
+bool checkForCollision(Snake *snake, Rectangle appleRect, bool *onBoard, int *score)
 {
     if (CheckCollisionRecs((Rectangle){snake->parts[0].x, snake->parts[0].y, 50, 50}, appleRect))
     {
@@ -23,6 +23,7 @@ void checkForCollision(Snake *snake, Rectangle appleRect, bool *onBoard, int *sc
         snake->length++;
         *onBoard = false;
         (*score)++;
-        // printf("%d", *score);
+        return true;
     }
+    return false;
 }

@@ -12,7 +12,7 @@ int main(void)
 {
     const int screenWidth = 800;
     const int screenHeight = 800;
-
+    InitAudioDevice();
     InitWindow(screenWidth, screenHeight, "Snake ultra game");
     GameScreen currentScreen = GAMEPLAY;
     SnakeDirection dir = DIR_RIGHT;
@@ -28,7 +28,9 @@ int main(void)
     snake.parts[0] = (Vector2){400, 400};
     snake.parts[1] = (Vector2){360, 400};
     snake.parts[2] = (Vector2){320, 400};
-
+    Music music = LoadMusicStream("assets/music.mp3");
+    PlayMusicStream(music);
+    Sound appleEating = LoadSound("assets/eating3.wav");
     while (!WindowShouldClose())
     {
         switch (currentScreen)
@@ -36,13 +38,19 @@ int main(void)
         case GAMEPLAY:
         {
             Rectangle appleRect = {appleX, appleY, 50, 50};
+            UpdateMusicStream(music);
 
-            checkForCollision(&snake, appleRect, &appleOnBoard, &score);
+            if (checkForCollision(&snake, appleRect, &appleOnBoard, &score))
+            {
+                PlaySound(appleEating);
+            }
             checkDirection(&dir);
             if (snakeCollisionParts(snake))
             {
                 // printf("self collision!\n");
                 currentScreen = ENDING;
+                score = 0;
+                StopMusicStream(music);
             }
             if (!appleOnBoard)
             {
@@ -62,6 +70,7 @@ int main(void)
             {
                 currentScreen = ENDING;
                 score = 0;
+                StopMusicStream(music);
             }
             // printf("Score: &d", score);
         }
@@ -77,6 +86,7 @@ int main(void)
                 dir = DIR_RIGHT;
                 appleOnBoard = false;
                 currentScreen = GAMEPLAY;
+                PlayMusicStream(music);
             }
         }
         break;
