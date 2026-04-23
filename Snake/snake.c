@@ -2,13 +2,13 @@
 
 void checkDirection(SnakeDirection *dir)
 {
-    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
+    if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) && *dir != DIR_LEFT)
         *dir = DIR_RIGHT;
-    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+    if ((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) && *dir != DIR_RIGHT)
         *dir = DIR_LEFT;
-    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
+    if ((IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) && *dir != DIR_UP)
         *dir = DIR_DOWN;
-    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
+    if ((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) && *dir != DIR_DOWN)
         *dir = DIR_UP;
 }
 
@@ -29,4 +29,16 @@ void moveSnake(Vector2 *position, SnakeDirection *dir)
         position->y += 5.0f;
         break;
     }
+}
+
+bool snakeCollisionParts(Snake snake)
+{
+    for (int i = snake.length - 1; i > 0; i--)
+    {
+        if (snake.parts[0].x == snake.parts[i].x && snake.parts[0].y == snake.parts[i].y)
+        {
+            return true;
+        }
+    }
+    return false;
 }

@@ -1,11 +1,12 @@
 #include "snake.h"
 #include "grid.h"
+#include "apple.h"
 
-typedef enum GameScreen
-{
-    GAMEPLAY,
-    ENDING
-} GameScreen;
+// typedef enum GameScreen
+// {
+//     GAMEPLAY,
+//     ENDING
+// } GameScreen;
 
 int main(void)
 {
@@ -14,9 +15,19 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Snake ultra game");
     GameScreen currentScreen = GAMEPLAY;
-    Vector2 SquarePosition = {(float)screenWidth / 2, (float)screenHeight / 2};
     SnakeDirection dir = DIR_RIGHT;
     SetTargetFPS(60);
+    Texture2D background = LoadTexture("assets/gamebg.jpg");
+    Texture2D apple = LoadTexture("assets/apple.png");
+    bool appleOnBoard = false;
+    int appleX = 0;
+    int appleY = 0;
+    int score = 0;
+    Snake snake;
+    snake.length = 3;
+    snake.parts[0] = (Vector2){400, 400};
+    snake.parts[1] = (Vector2){360, 400};
+    snake.parts[2] = (Vector2){320, 400};
 
     while (!WindowShouldClose())
     {
@@ -24,33 +35,71 @@ int main(void)
         {
         case GAMEPLAY:
         {
+            Rectangle appleRect = {appleX, appleY, 50, 50};
+
+            checkForCollision(&snake, appleRect, &appleOnBoard, &score);
             checkDirection(&dir);
-            moveSnake(&SquarePosition, &dir);
-            bool result = checkPlayerPositionForCollisionWall(SquarePosition);
+            if (snakeCollisionParts(snake))
+            {
+                // printf("self collision!\n");
+                currentScreen = ENDING;
+            }
+            if (!appleOnBoard)
+            {
+                appleX = getAppleCorX();
+                appleY = getAppleCorY();
+                appleOnBoard = true;
+            }
+
+            for (int i = snake.length - 1; i > 0; i--)
+            {
+                snake.parts[i] = snake.parts[i - 1];
+            }
+            moveSnake(&snake.parts[0], &dir);
+
+            bool result = checkPlayerPositionForCollisionWall(snake.parts[0]);
             if (result)
             {
                 currentScreen = ENDING;
+                score = 0;
             }
+            // printf("Score: &d", score);
         }
         break;
         case ENDING:
         {
             if (IsKeyPressed(KEY_ENTER))
             {
-                SquarePosition.x = (float)screenWidth / 2;
-                SquarePosition.y = (float)screenHeight / 2;
+                snake.length = 3;
+                snake.parts[0] = (Vector2){400, 400};
+                snake.parts[1] = (Vector2){360, 400};
+                snake.parts[2] = (Vector2){320, 400};
+                dir = DIR_RIGHT;
+                appleOnBoard = false;
                 currentScreen = GAMEPLAY;
             }
         }
         break;
         }
+
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        DrawTexture(background, 0, 0, WHITE);
         switch (currentScreen)
         {
         case GAMEPLAY:
         {
-            DrawRectangle(SquarePosition.x, SquarePosition.y, 100, 100, GREEN);
+            if (appleOnBoard)
+            {
+                DrawTexture(apple, appleX, appleY, WHITE);
+            }
+
+            for (int i = 0; i < snake.length; i++)
+            {
+                Color c = (i == 0) ? DARKGREEN : GREEN;
+                DrawRectangle(snake.parts[i].x, snake.parts[i].y, 50, 50, c);
+            }
+            DrawText(TextFormat("Score: %d", score), 5, 5, 25, WHITE);
         }
         break;
         case ENDING:
