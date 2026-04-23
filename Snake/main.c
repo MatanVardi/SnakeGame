@@ -17,7 +17,7 @@ int main(void)
     GameScreen currentScreen = GAMEPLAY;
     SnakeDirection dir = DIR_RIGHT;
     SetTargetFPS(60);
-    Texture2D background = LoadTexture("assets/gamebg.jpg");
+    Texture2D background = LoadTexture("assets/bggame.png");
     Texture2D apple = LoadTexture("assets/apple.png");
     bool appleOnBoard = false;
     int appleX = 0;
@@ -31,6 +31,7 @@ int main(void)
     Music music = LoadMusicStream("assets/music.mp3");
     PlayMusicStream(music);
     Sound appleEating = LoadSound("assets/eating3.wav");
+    Sound deadSound = LoadSound("assets/dead.mp3");
     while (!WindowShouldClose())
     {
         switch (currentScreen)
@@ -48,6 +49,7 @@ int main(void)
             if (snakeCollisionParts(snake))
             {
                 // printf("self collision!\n");
+                PlaySound(deadSound);
                 currentScreen = ENDING;
                 score = 0;
                 StopMusicStream(music);
@@ -68,6 +70,7 @@ int main(void)
             bool result = checkPlayerPositionForCollisionWall(snake.parts[0]);
             if (result)
             {
+                PlaySound(deadSound);
                 currentScreen = ENDING;
                 score = 0;
                 StopMusicStream(music);
@@ -114,7 +117,8 @@ int main(void)
         break;
         case ENDING:
         {
-            DrawText("YOU HAVE LOST", 200, 375, 50, DARKBLUE);
+            DrawText("YOU HAVE LOST", 200, 330, 50, DARKBLUE);
+            DrawText("PRESS ENTER TO RESTART", 115, 470, 40, DARKBLUE);
         }
         break;
         }
