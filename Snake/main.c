@@ -28,6 +28,7 @@ int main(void)
     snake.parts[0] = (Vector2){400, 400};
     snake.parts[1] = (Vector2){360, 400};
     snake.parts[2] = (Vector2){320, 400};
+
     Music music = LoadMusicStream("assets/music.mp3");
     PlayMusicStream(music);
     Sound appleEating = LoadSound("assets/eating3.wav");

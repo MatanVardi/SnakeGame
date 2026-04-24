@@ -2,22 +2,19 @@
 
 int getAppleCorX()
 {
-    int min = 50;
-    int max = 700;
-    int randomNumX = (rand() % (max - min + 1)) + min;
-    return randomNumX;
+    int cell = rand() % 16;
+    return cell * 50;
 }
+
 int getAppleCorY()
 {
-    int min = 50;
-    int max = 700;
-    int randomNumY = (rand() % (max - min + 1)) + min;
-    return randomNumY;
+    int cell = rand() % 16;
+    return cell * 50;
 }
 
 bool checkForCollision(Snake *snake, Rectangle appleRect, bool *onBoard, int *score)
 {
-    if (CheckCollisionRecs((Rectangle){snake->parts[0].x, snake->parts[0].y, 50, 50}, appleRect))
+    if (snake->parts[0].x == appleRect.x && snake->parts[0].y == appleRect.y)
     {
         snake->parts[snake->length] = snake->parts[snake->length - 1];
         snake->length++;
