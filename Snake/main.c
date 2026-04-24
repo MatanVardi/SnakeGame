@@ -2,12 +2,6 @@
 #include "grid.h"
 #include "apple.h"
 
-// typedef enum GameScreen
-// {
-//     GAMEPLAY,
-//     ENDING
-// } GameScreen;
-
 int main(void)
 {
     const int screenWidth = 800;
@@ -23,60 +17,66 @@ int main(void)
     int appleX = 0;
     int appleY = 0;
     int score = 0;
+    int moveTimer = 0;
+    int moveDelay = 7;
+
     Snake snake;
     snake.length = 3;
     snake.parts[0] = (Vector2){400, 400};
-    snake.parts[1] = (Vector2){360, 400};
-    snake.parts[2] = (Vector2){320, 400};
+    snake.parts[1] = (Vector2){350, 400};
+    snake.parts[2] = (Vector2){300, 400};
 
     Music music = LoadMusicStream("assets/music.mp3");
     PlayMusicStream(music);
     Sound appleEating = LoadSound("assets/eating3.wav");
     Sound deadSound = LoadSound("assets/dead.mp3");
+
     while (!WindowShouldClose())
     {
         switch (currentScreen)
         {
         case GAMEPLAY:
         {
-            Rectangle appleRect = {appleX, appleY, 50, 50};
             UpdateMusicStream(music);
-
-            if (checkForCollision(&snake, appleRect, &appleOnBoard, &score))
-            {
-                PlaySound(appleEating);
-            }
             checkDirection(&dir);
-            if (snakeCollisionParts(snake))
-            {
-                // printf("self collision!\n");
-                PlaySound(deadSound);
-                currentScreen = ENDING;
-                score = 0;
-                StopMusicStream(music);
-            }
-            if (!appleOnBoard)
-            {
-                appleX = getAppleCorX();
-                appleY = getAppleCorY();
-                appleOnBoard = true;
-            }
 
-            for (int i = snake.length - 1; i > 0; i--)
+            moveTimer++;
+            if (moveTimer >= moveDelay)
             {
-                snake.parts[i] = snake.parts[i - 1];
-            }
-            moveSnake(&snake.parts[0], &dir);
+                moveTimer = 0;
 
-            bool result = checkPlayerPositionForCollisionWall(snake.parts[0]);
-            if (result)
-            {
-                PlaySound(deadSound);
-                currentScreen = ENDING;
-                score = 0;
-                StopMusicStream(music);
+                for (int i = snake.length - 1; i > 0; i--)
+                    snake.parts[i] = snake.parts[i - 1];
+
+                moveSnake(&snake.parts[0], &dir);
+
+                Rectangle appleRect = {appleX, appleY, 50, 50};
+                if (checkForCollision(&snake, appleRect, &appleOnBoard, &score))
+                    PlaySound(appleEating);
+
+                if (!appleOnBoard)
+                {
+                    appleX = getAppleCorX();
+                    appleY = getAppleCorY();
+                    appleOnBoard = true;
+                }
+
+                if (snakeCollisionParts(snake))
+                {
+                    PlaySound(deadSound);
+                    currentScreen = ENDING;
+                    score = 0;
+                    StopMusicStream(music);
+                }
+
+                if (checkPlayerPositionForCollisionWall(snake.parts[0]))
+                {
+                    PlaySound(deadSound);
+                    currentScreen = ENDING;
+                    score = 0;
+                    StopMusicStream(music);
+                }
             }
-            // printf("Score: &d", score);
         }
         break;
         case ENDING:
@@ -85,10 +85,11 @@ int main(void)
             {
                 snake.length = 3;
                 snake.parts[0] = (Vector2){400, 400};
-                snake.parts[1] = (Vector2){360, 400};
-                snake.parts[2] = (Vector2){320, 400};
+                snake.parts[1] = (Vector2){350, 400};
+                snake.parts[2] = (Vector2){300, 400};
                 dir = DIR_RIGHT;
                 appleOnBoard = false;
+                moveTimer = 0;
                 currentScreen = GAMEPLAY;
                 PlayMusicStream(music);
             }
@@ -104,9 +105,7 @@ int main(void)
         case GAMEPLAY:
         {
             if (appleOnBoard)
-            {
                 DrawTexture(apple, appleX, appleY, WHITE);
-            }
 
             for (int i = 0; i < snake.length; i++)
             {
@@ -126,6 +125,5 @@ int main(void)
         EndDrawing();
     }
     CloseWindow();
-
     return 0;
 }

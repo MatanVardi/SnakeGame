@@ -17,16 +17,16 @@ void moveSnake(Vector2 *position, SnakeDirection *dir)
     switch (*dir)
     {
     case DIR_RIGHT:
-        position->x += 5.0f;
+        position->x += 50.0f;
         break;
     case DIR_LEFT:
-        position->x -= 5.0f;
+        position->x -= 50.0f;
         break;
     case DIR_UP:
-        position->y -= 5.0f;
+        position->y -= 50.0f;
         break;
     case DIR_DOWN:
-        position->y += 5.0f;
+        position->y += 50.0f;
         break;
     }
 }
